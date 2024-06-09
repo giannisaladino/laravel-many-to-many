@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Project;
+use App\Models\Tecnology;
 use App\Models\Type;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -18,7 +19,15 @@ class ProjectSeeder extends Seeder
     {
         $types = Type::all();  //Collection di oggetti type
 
-        $ids = $types->pluck('id')->all();
+        // pluck() mi crea un array di id
+        $category_ids = $types->pluck('id')->all();
+
+
+        $tecnologies = Tecnology::all();
+
+        $tecnologies_ids = $tecnologies->pluck('id')->all();
+
+
 
         for ($i=0; $i < 10 ; $i++) { 
  
@@ -28,10 +37,17 @@ class ProjectSeeder extends Seeder
             $project->name = $name;
             $project->slug = Str::slug($name);
             $project->date = $faker->dateTimeBetween("-1 week","+1 week");
-            $project->type_id = $faker->randomElement($ids);
-
+            $project->type_id = $faker->randomElement($category_ids);
+            
+            // fino a qui il project non ha ancora un id
+        
             $project->save();
+        
+            // qui il project ha un id e possiamo usare il metodo attach
 
+            // prendendo un numero random di id di tecnologies
+            $random_tecnologies_ids = $faker->randomElements($tecnologies_ids, null);
+            $project->tecnologies()->attach($random_tecnologies_ids);
             
         }
     }
