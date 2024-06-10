@@ -3,7 +3,7 @@
 @section('content')
 <div class="container text-center mt-5">
     <h3>{{ $project->name }}</h3>
-    <h4>Type: {{ $project->type->name }}</h4>
+    <h4>Type: {{ $project->type ? $project->type->name : '' }}</h4>
     <!-- <h5>Data di creazione: {{ $project->date }}</h5> -->
     <ul class="d-flex justify-content-center gap-2 list-unstyled">
         <!-- @dump($project->tecnologies()) -->

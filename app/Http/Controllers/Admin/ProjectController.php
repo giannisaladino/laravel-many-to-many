@@ -7,6 +7,7 @@ use App\Models\Project;
 use App\Models\Tecnology;
 use Illuminate\Http\Request;
 use App\Models\Type;
+use Illuminate\Support\Str;
 
 class ProjectController extends Controller
 {
@@ -40,8 +41,35 @@ class ProjectController extends Controller
     {
         $form_data = $request->all();
 
-        $new_project = Project::create($form_data);
-        return to_route('admin.projects.show', $new_project);
+        $base_slug = Str::slug($form_data['name']);
+        $slug = $base_slug;
+
+        $n = 0;
+
+        do {
+            // SELECT * FROM `posts` WHERE `slug` = ?
+            $find = Project::where('slug', $slug)->first(); // null | Post
+
+            if ($find !== null) {
+                $n++;
+                $slug = $base_slug . '-' . $n;
+            }
+        } while ($find !== null);
+
+        $form_data['slug'] = $slug;
+
+        // dd($form_data);
+
+        // creare l'istanza e salvarla nel db
+        $project = Project::create($form_data);
+
+        // controlliamo se sono stati inviati dei tags
+        if ($request->has('tecnologies')) {
+            // $post->tags()->attach($form_data['tags']);
+            $project->tecnologies()->attach($request->tecnologies);
+        }
+        
+        return to_route('admin.projects.show', $project);
     }
 
     /**
