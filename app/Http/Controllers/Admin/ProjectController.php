@@ -27,8 +27,10 @@ class ProjectController extends Controller
     {
         $projects = Project::all();
         $types = Type::all();
+        $tecnologies = Tecnology::orderBy('name', 'asc')->get();
 
-        return view("admin.projects.create", compact('types', 'projects'));
+
+        return view("admin.projects.create", compact('types', 'projects', 'tecnologies'));
     }
 
     /**
@@ -36,7 +38,10 @@ class ProjectController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $form_data = $request->all();
+
+        $new_project = Project::create($form_data);
+        return to_route('admin.projects.show', $new_project);
     }
 
     /**
@@ -69,6 +74,8 @@ class ProjectController extends Controller
      */
     public function destroy(Project $project)
     {
-        //
+        $project->delete();
+
+        return to_route('admin.projects.index');
     }
 }
